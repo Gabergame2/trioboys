@@ -57,6 +57,8 @@ const MEDIA_SECTIONS = [
 const TOTAL_MEDIA = MEDIA_SECTIONS.reduce((total, section) => total + section.items.length, 0);
 
 export default function MediaVault({ open, onClose }) {
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
   useEffect(() => {
     if (!open) return undefined;
 
