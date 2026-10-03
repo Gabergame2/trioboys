@@ -73,6 +73,7 @@ export default function MediaVault({ open, onClose }) {
     };
   }, [open, onClose]);
 
+  if (typeof document === "undefined") return null;
   return createPortal(
     <AnimatePresence>
       {open && (
