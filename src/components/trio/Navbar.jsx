@@ -1,0 +1,199 @@
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, Youtube } from "lucide-react";
+import { Link, useLocation } from "@tanstack/react-router";
+import { useJelly } from "@/lib/JellyContext";
+
+const NAV_ITEMS = [
+  { label: "THE BOYS", href: "#hero" },
+  { label: "VIDEOS", href: "#feed" },
+  { label: "MERCH", href: "#merch" },
+  { label: "COMMUNITY", href: "#community" },
+];
+
+export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const { activate, activateScreen } = useJelly();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const scrollTo = (href) => {
+    setIsOpen(false);
+    const el = document.querySelector(href);
+    el?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const activateJelly = () => {
+    setIsOpen(false);
+    activate();
+  };
+
+  const activateJellyScreen = () => {
+    setIsOpen(false);
+    activateScreen();
+  };
+
+  const handleHomeClick = (event) => {
+    if (location.pathname === "/") {
+      event.preventDefault();
+      scrollTo("#hero");
+    } else {
+      setIsOpen(false);
+    }
+  };
+
+  return (
+    <>
+      <motion.nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          scrolled ? "bg-background/80 backdrop-blur-xl border-b border-primary/10" : ""
+        }`}
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+          <Link
+            to="/"
+            onClick={handleHomeClick}
+            aria-label="Website home"
+            className="flex items-center gap-2 group"
+          >
+            <img
+              src="/logo.png"
+              alt="Trio Boys Logo"
+              className="h-12 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+            />
+            <span className="font-display text-2xl md:text-3xl font-black tracking-[0.12em] text-foreground group-hover:text-primary transition-colors duration-300">
+              Website
+            </span>
+          </Link>
+
+          {/* Desktop nav */}
+          <div className="hidden md:flex items-center gap-1">
+            {NAV_ITEMS.map((item) => (
+              <button
+                key={item.label}
+                onClick={() => scrollTo(item.href)}
+                className="relative px-4 py-2 text-sm font-body font-medium tracking-widest text-muted-foreground hover:text-foreground transition-colors group"
+              >
+                {item.label}
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-primary group-hover:w-full transition-all duration-300" />
+              </button>
+            ))}
+            <Link
+              to="/timeline"
+              data-testid="link-desktop-archive-timeline"
+              className="relative px-4 py-2 text-sm font-body font-medium tracking-widest text-muted-foreground hover:text-foreground transition-colors group"
+            >
+              ARCHIVE
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-accent group-hover:w-full transition-all duration-300" />
+            </Link>
+            <a
+              href="https://youtube.com/@trioboysmedia?si=xixYrOaONuB9716M"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-4 flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 text-sm font-bold tracking-wider hover:bg-accent hover:text-accent-foreground transition-colors duration-300"
+            >
+              <Youtube className="w-4 h-4" />
+              SUBSCRIBE
+            </a>
+          </div>
+
+          {/* Mobile toggle */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            data-testid="button-mobile-menu"
+            aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={isOpen}
+            className="md:hidden text-foreground p-2"
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+      </motion.nav>
+
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="fixed inset-0 z-40 bg-background/95 backdrop-blur-xl flex flex-col items-center justify-start gap-8 pt-32 pb-10 overflow-y-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {NAV_ITEMS.map((item, i) => (
+              <motion.button
+                key={item.label}
+                onClick={() => scrollTo(item.href)}
+                className="text-3xl font-display font-bold tracking-widest text-foreground hover:text-primary transition-colors"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+              >
+                {item.label}
+              </motion.button>
+            ))}
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: NAV_ITEMS.length * 0.1 }}
+            >
+              <Link
+                to="/timeline"
+                onClick={() => setIsOpen(false)}
+                data-testid="link-mobile-archive-timeline"
+                className="group flex items-center gap-3 text-3xl font-display font-bold tracking-widest text-accent hover:text-foreground transition-colors"
+              >
+                <span className="h-px w-7 bg-accent group-hover:w-10 transition-all duration-300" />
+                ARCHIVE TIMELINE
+              </Link>
+            </motion.div>
+
+            <motion.a
+              href="https://youtube.com/@trioboysmedia?si=xixYrOaONuB9716M"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 flex items-center gap-3 bg-primary text-primary-foreground px-8 py-3 text-lg font-bold tracking-wider"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <Youtube className="w-5 h-5" />
+              SUBSCRIBE
+            </motion.a>
+
+            {/* ── Secret #1: jelly blob game ── */}
+            <motion.button
+              onClick={activateJelly}
+              className="invisible-ink-btn mt-4 text-xs tracking-[0.4em] font-body uppercase select-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.55 }}
+            >
+              🍮 jelly mode
+            </motion.button>
+
+            {/* ── Secret #2: jelly screen effect ── */}
+            <motion.button
+              onClick={activateJellyScreen}
+              className="invisible-ink-btn text-xs tracking-[0.4em] font-body uppercase select-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.65 }}
+            >
+              🫧 "jelly mode"
+            </motion.button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
