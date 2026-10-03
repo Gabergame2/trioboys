@@ -62,11 +62,11 @@ function HoldIndicator({ progress }) {
 
   return (
     <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-      <div className="rounded-full bg-background/80 backdrop-blur-sm border border-primary/70 p-3 shadow-[0_0_30px_hsl(var(--primary)/0.35)]">
+      <div className="rounded-full bg-background/80 backdrop-blur-sm border border-primary/70 p-3 shadow-[0_0_30px_color-mix(in_oklab,var(--primary)_35%,transparent)]">
         <div
           className="w-16 h-16 rounded-full flex items-center justify-center"
           style={{
-            background: `conic-gradient(hsl(var(--primary)) ${progress * 360}deg, hsl(var(--foreground) / 0.15) 0deg)`,
+            background: `conic-gradient(var(--primary) ${progress * 360}deg, color-mix(in oklab, var(--foreground) 15%, transparent) 0deg)`,
           }}
         >
           <div className="w-[3.4rem] h-[3.4rem] rounded-full bg-background flex items-center justify-center">

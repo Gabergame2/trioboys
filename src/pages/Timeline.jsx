@@ -178,7 +178,7 @@ function TimelineEvent({ event, index }) {
       </div>
 
       <div className="absolute left-0 top-6 flex w-8 -translate-x-1/2 justify-center md:static md:col-start-2 md:row-start-1 md:w-auto md:translate-x-0">
-        <div className="relative z-10 flex h-8 w-8 items-center justify-center border border-primary bg-background shadow-[0_0_0_6px_hsl(var(--background))]">
+        <div className="relative z-10 flex h-8 w-8 items-center justify-center border border-primary bg-background shadow-[0_0_0_6px_var(--background)]">
           <span className="h-2.5 w-2.5 bg-primary" />
         </div>
       </div>
