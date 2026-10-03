@@ -127,7 +127,7 @@ function MobileCard({ member, i, holdProgress = 0, onHoldStart, onHoldEnd, onSel
   );
 }
 
-/* ─── Desktop panel ────────────────────────────────────────────── */
+/* ─── Desktop grid card (2 columns × 4 rows) ───────────────────── */
 function DesktopPanel({
   member,
   i,
@@ -141,7 +141,7 @@ function DesktopPanel({
   return (
     <motion.div
       key={member.name}
-      className="relative flex-1 cursor-pointer overflow-hidden group"
+      className="relative h-full cursor-pointer overflow-hidden group"
       onMouseEnter={() => setActiveIndex(i)}
       onMouseLeave={() => setActiveIndex(null)}
       onClick={member.name === "AIDEN" ? onSelect : undefined}
@@ -150,8 +150,8 @@ function DesktopPanel({
       onPointerCancel={member.name === "GABE" ? onHoldEnd : undefined}
       onContextMenu={member.name === "GABE" ? (event) => event.preventDefault() : undefined}
       animate={{
-        flex: activeIndex === null ? 1 : activeIndex === i ? 2.5 : 0.55,
-        opacity: activeIndex === null ? 1 : activeIndex === i ? 1 : 0.4,
+        scale: activeIndex === null || activeIndex === i ? 1 : 0.97,
+        opacity: activeIndex === null || activeIndex === i ? 1 : 0.5,
       }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
@@ -166,10 +166,6 @@ function DesktopPanel({
       </div>
       {member.name === "GABE" && <HoldIndicator progress={holdProgress} />}
 
-      {/* Vertical divider */}
-      {i < MEMBERS.length - 1 && (
-        <div className="absolute right-0 top-0 bottom-0 w-px bg-primary/20 z-20" />
-      )}
 
       {/* Member info */}
       <div className="absolute bottom-0 left-0 right-0 p-8 z-10">
@@ -292,10 +288,23 @@ export default function HeroSection() {
         ))}
       </div>
 
-      {/* ── DESKTOP: expanding horizontal panels ── */}
-      <div className="hidden md:flex flex-1 relative z-10 pt-0" style={{ minHeight: "calc(100vh - 4rem)" }}>
+      {/* ── DESKTOP: 2-column, 4-row grid ── */}
+      <div
+        className="hidden md:grid relative z-10 grid-cols-2 gap-3"
+        style={{ gridAutoRows: "calc(100vh - 4rem)" }}
+      >
         {MEMBERS.map((member, i) => (
-            <DesktopPanel
+          <div
+            key={member.name}
+            className={
+              i === MEMBERS.length - 1 && MEMBERS.length % 2 === 1
+                ? "col-span-2 flex justify-center"
+                : ""
+            }
+          >
+            {i === MEMBERS.length - 1 && MEMBERS.length % 2 === 1 ? (
+              <div className="w-1/2 h-full">
+                <DesktopPanel
             key={member.name}
             member={member}
             i={i}
@@ -304,8 +313,22 @@ export default function HeroSection() {
               holdProgress={member.name === "GABE" ? holdProgress : 0}
               onHoldStart={startGabeHold}
               onHoldEnd={endGabeHold}
-              onSelect={() => setAidenStoryOpen(true)}
-          />
+                  onSelect={() => setAidenStoryOpen(true)}
+                />
+              </div>
+            ) : (
+              <DesktopPanel
+                member={member}
+                i={i}
+                activeIndex={activeIndex}
+                setActiveIndex={setActiveIndex}
+                holdProgress={member.name === "GABE" ? holdProgress : 0}
+                onHoldStart={startGabeHold}
+                onHoldEnd={endGabeHold}
+                onSelect={() => setAidenStoryOpen(true)}
+              />
+            )}
+          </div>
         ))}
       </div>
 
